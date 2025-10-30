@@ -1,13 +1,15 @@
 import React from 'react';
-import { MenuIcon, SearchIcon, QuestionMarkCircleIcon, CogIcon, AppsIcon } from './icons/Icons';
+import { MenuIcon, SearchIcon, QuestionMarkCircleIcon, CogIcon, AppsIcon, SunIcon, MoonIcon } from './icons/Icons';
 
 interface HeaderProps {
   onMenuClick: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick, searchQuery, onSearchChange }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, searchQuery, onSearchChange, theme, onToggleTheme }) => {
   return (
     <header className="flex items-center justify-between px-4 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
       <div className="flex items-center space-x-4">
@@ -41,6 +43,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, searchQuery, onSearchChang
         </button>
         <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
           <CogIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+        </button>
+        <button onClick={onToggleTheme} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle theme" title="Toggle theme">
+          {theme === 'light' ? (
+            <MoonIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+          ) : (
+            <SunIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+          )}
         </button>
         <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
           <AppsIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />

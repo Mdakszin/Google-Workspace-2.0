@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LeftSidebar from './components/LeftSidebar';
 import MainContent from './components/MainContent';
@@ -25,6 +25,19 @@ const mockEmails: Email[] = [
   { id: '8', sender: 'John Appleseed', senderPhoto: 'https://picsum.photos/seed/john/40/40', subject: 'Re: Lunch meeting', snippet: 'Sounds good, see you tomorrow at 12!', timestamp: '3 days ago', isRead: true, isStarred: true },
 ];
 
+const getInitialTheme = (): 'light' | 'dark' => {
+  if (typeof window !== 'undefined') {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+  }
+  return 'light';
+};
+
 
 const App: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -33,6 +46,21 @@ const App: React.FC = () => {
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
   const [activeView, setActiveView] = useState('inbox');
   const [activeRightSidebar, setActiveRightSidebar] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
 
   const toggleLeftSidebar = () => {
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
@@ -91,11 +119,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-hidden">
+    <div className="h-screen w-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-hidden bg-gray-100 dark:bg-gray-900">
       <Header
         onMenuClick={toggleLeftSidebar}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
       <div className="flex flex-grow overflow-hidden">
         {isLeftSidebarOpen && (
