@@ -44,7 +44,12 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
   const [recipients, setRecipients] = useState<string[]>([]);
   const [currentRecipient, setCurrentRecipient] = useState('');
   const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const bodyRef = useRef<HTMLDivElement>(null);
+  const isInitialLoad = useRef(true);
+  const hideStatusTimerRef = useRef<number | null>(null);
+
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -55,44 +60,76 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
         if (draft) {
           setRecipients(draft.recipients || []);
           setSubject(draft.subject || '');
-          if (bodyRef.current && draft.body) {
-            bodyRef.current.innerHTML = draft.body;
-          }
+          setBody(draft.body || '');
+          setSaveStatus('saved');
+          
+          // Hide the initial 'Saved' status after a delay
+          hideStatusTimerRef.current = window.setTimeout(() => {
+            setSaveStatus('idle');
+          }, 2000);
         }
       } catch (error) {
         console.error("Failed to parse draft from localStorage", error);
         localStorage.removeItem(DRAFT_KEY);
       }
     }
-  }, []); // Runs only once on mount
-
-  // Auto-save draft every 30 seconds
-  useEffect(() => {
-    const saveDraft = () => {
-      const draft = {
-        recipients,
-        subject,
-        body: bodyRef.current?.innerHTML || '',
-      };
-      if (draft.recipients.length > 0 || draft.subject || draft.body) {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-      } else {
-        localStorage.removeItem(DRAFT_KEY); // Clean up if draft is empty
-      }
-    };
-
-    const intervalId = setInterval(saveDraft, 30000); // Auto-save every 30 seconds
+    // Flag initial load as complete after a short delay to prevent saving on mount
+    const timer = setTimeout(() => {
+      isInitialLoad.current = false;
+    }, 100);
 
     return () => {
-      clearInterval(intervalId);
+      clearTimeout(timer);
+      if (hideStatusTimerRef.current) {
+        clearTimeout(hideStatusTimerRef.current);
+      }
     };
-  }, [recipients, subject]);
+  }, []); // Runs only once on mount
+
+  // Auto-save draft with debounce and improved status indicator
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      return;
+    }
+
+    // When user types, clear any timer that was set to hide the 'Saved' status
+    if (hideStatusTimerRef.current) {
+      clearTimeout(hideStatusTimerRef.current);
+    }
+
+    const isDraftEmpty = recipients.length === 0 && !subject.trim() && !body.trim();
+
+    if (isDraftEmpty) {
+      // If the draft is or becomes empty, remove it and stay idle.
+      localStorage.removeItem(DRAFT_KEY);
+      setSaveStatus('idle');
+      return; // Stop here if there's nothing to save.
+    }
+
+    setSaveStatus('saving');
+
+    const saveHandler = setTimeout(() => {
+      const draft = { recipients, subject, body };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      setSaveStatus('saved');
+
+      // Set a new timer to hide the 'Saved' status after 2 seconds
+      hideStatusTimerRef.current = window.setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+
+    }, 1500); // Debounce for 1.5 seconds
+
+    return () => {
+      clearTimeout(saveHandler);
+    };
+  }, [recipients, subject, body]);
 
 
   const handleSend = () => {
-    const body = bodyRef.current?.innerHTML || '';
+    const bodyToSend = bodyRef.current?.innerHTML || '';
     // In a real app, this would dispatch an action to send the email.
-    console.log('Sending email:', { to: recipients, subject, body });
+    console.log('Sending email:', { to: recipients, subject, body: bodyToSend });
     alert('Email sent! (Check the console for details)');
     localStorage.removeItem(DRAFT_KEY); // Clear draft on send
     onClose();
@@ -181,6 +218,8 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
             ref={bodyRef}
             contentEditable={true}
             className="w-full h-full bg-transparent p-2 resize-none focus:outline-none focus:ring-0 text-sm text-gray-800 dark:text-gray-200 overflow-y-auto"
+            onInput={(e) => setBody(e.currentTarget.innerHTML)}
+            dangerouslySetInnerHTML={{ __html: body }}
             aria-label="Email body"
             role="textbox"
             aria-multiline="true"
@@ -197,6 +236,10 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
             >
               Send
             </button>
+            <div className="text-xs text-gray-500 dark:text-gray-400 w-20 text-left pl-2 h-4">
+              {saveStatus === 'saving' && <span className="italic">Saving...</span>}
+              {saveStatus === 'saved' && <span>Saved</span>}
+            </div>
             <div className="flex items-center text-gray-500 dark:text-gray-400">
               <div className="relative">
                 <select
