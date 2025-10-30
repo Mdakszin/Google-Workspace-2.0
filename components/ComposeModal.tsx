@@ -10,6 +10,12 @@ import {
   ListUlIcon,
   ChevronDownIcon,
   TrashIcon,
+  StrikethroughIcon,
+  TextColorIcon,
+  AlignLeftIcon,
+  AlignCenterIcon,
+  AlignRightIcon,
+  AlignJustifyIcon,
 } from './icons/Icons';
 
 interface ComposeModalProps {
@@ -47,6 +53,7 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
   const [body, setBody] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const bodyRef = useRef<HTMLDivElement>(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
   const isInitialLoad = useRef(true);
   const hideStatusTimerRef = useRef<number | null>(null);
 
@@ -228,7 +235,7 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex-wrap">
           <div className="flex items-center space-x-1">
             <button
               onClick={handleSend}
@@ -240,7 +247,7 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
               {saveStatus === 'saving' && <span className="italic">Saving...</span>}
               {saveStatus === 'saved' && <span>Saved</span>}
             </div>
-            <div className="flex items-center text-gray-500 dark:text-gray-400">
+            <div className="flex items-center text-gray-500 dark:text-gray-400 flex-wrap">
               <div className="relative">
                 <select
                   onChange={(e) => applyFormat('fontName', e.target.value)}
@@ -273,22 +280,31 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
 
               <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
-              <FormatButton onClick={() => applyFormat('bold')} label="Bold">
-                <BoldIcon className="h-5 w-5" />
-              </FormatButton>
-              <FormatButton onClick={() => applyFormat('italic')} label="Italic">
-                <ItalicIcon className="h-5 w-5" />
-              </FormatButton>
-              <FormatButton onClick={() => applyFormat('underline')} label="Underline">
-                <UnderlineIcon className="h-5 w-5" />
-              </FormatButton>
-               <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-               <FormatButton onClick={() => applyFormat('insertUnorderedList')} label="Bulleted list">
-                <ListUlIcon className="h-5 w-5" />
-              </FormatButton>
-               <FormatButton onClick={() => applyFormat('insertOrderedList')} label="Numbered list">
-                <ListOlIcon className="h-5 w-5" />
-              </FormatButton>
+              <FormatButton onClick={() => applyFormat('bold')} label="Bold"><BoldIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('italic')} label="Italic"><ItalicIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('underline')} label="Underline"><UnderlineIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('strikeThrough')} label="Strikethrough"><StrikethroughIcon className="h-5 w-5" /></FormatButton>
+              
+              <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+              
+              <div className="relative">
+                <FormatButton onClick={() => colorInputRef.current?.click()} label="Text color">
+                    <TextColorIcon className="h-5 w-5" />
+                </FormatButton>
+                <input ref={colorInputRef} type="color" defaultValue="#000000" onChange={(e) => applyFormat('foreColor', e.target.value)} className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" aria-label="Text color picker" />
+              </div>
+
+              <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+              <FormatButton onClick={() => applyFormat('insertUnorderedList')} label="Bulleted list"><ListUlIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('insertOrderedList')} label="Numbered list"><ListOlIcon className="h-5 w-5" /></FormatButton>
+              
+              <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+              
+              <FormatButton onClick={() => applyFormat('justifyLeft')} label="Align left"><AlignLeftIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('justifyCenter')} label="Align center"><AlignCenterIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('justifyRight')} label="Align right"><AlignRightIcon className="h-5 w-5" /></FormatButton>
+              <FormatButton onClick={() => applyFormat('justifyFull')} label="Justify"><AlignJustifyIcon className="h-5 w-5" /></FormatButton>
             </div>
           </div>
           <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">

@@ -200,3 +200,41 @@ export const ListUlIcon: React.FC<SVGProps> = (props) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75v-.008zm0 5.25h.007v.008H3.75v-.008z" />
     </svg>
 );
+
+export const StrikethroughIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12h12" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 5.5c-1.5-1-3.5-1.5-5.5-1.5-4 0-6.5 3-6.5 5.5s2.5 5.5 6.5 5.5c2 0 4-.5 5.5-1.5" />
+  </svg>
+);
+
+export const TextColorIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 4.125l-6 15.75M14.47 4.125l6 15.75M19.5 19.875H4.5" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.875 14.625h-9.75" />
+  </svg>
+);
+
+export const AlignLeftIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h12.75M3.75 17.25h16.5" />
+  </svg>
+);
+
+export const AlignCenterIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M6 12h12m-12 5.25h12" />
+  </svg>
+);
+
+export const AlignRightIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M7.5 12h12.75M3.75 17.25h16.5" />
+  </svg>
+);
+
+export const AlignJustifyIcon: React.FC<SVGProps> = (props) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+  </svg>
+);
