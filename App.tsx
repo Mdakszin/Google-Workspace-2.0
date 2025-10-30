@@ -9,6 +9,10 @@ import ChatView from './components/ChatView';
 import SpacesView from './components/SpacesView';
 import MeetView from './components/MeetView';
 import RecentsView from './components/RecentsView';
+import CalendarPanel from './components/panels/CalendarPanel';
+import KeepPanel from './components/panels/KeepPanel';
+import TasksPanel from './components/panels/TasksPanel';
+import ContactsPanel from './components/panels/ContactsPanel';
 
 const mockEmails: Email[] = [
   { id: '1', sender: 'Google', senderPhoto: 'https://picsum.photos/seed/google/40/40', subject: 'Security alert', snippet: 'A new sign-in to your account was detected.', timestamp: '10:42 AM', isRead: false, isStarred: true },
@@ -28,9 +32,14 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
   const [activeView, setActiveView] = useState('inbox');
+  const [activeRightSidebar, setActiveRightSidebar] = useState<string | null>(null);
 
   const toggleLeftSidebar = () => {
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
+  };
+
+  const handleRightSidebarToggle = (panel: string) => {
+    setActiveRightSidebar(prev => (prev === panel ? null : panel));
   };
 
   const handleToggleStar = (id: string) => {
@@ -61,6 +70,25 @@ const App: React.FC = () => {
         return <MainContent emails={filteredEmails} onToggleStar={handleToggleStar} />;
     }
   }
+  
+  const renderRightPanel = () => {
+    if (!activeRightSidebar) return null;
+
+    const panelProps = { onClose: () => setActiveRightSidebar(null) };
+
+    switch (activeRightSidebar) {
+      case 'calendar':
+        return <CalendarPanel {...panelProps} />;
+      case 'keep':
+        return <KeepPanel {...panelProps} />;
+      case 'tasks':
+        return <TasksPanel {...panelProps} />;
+      case 'contacts':
+        return <ContactsPanel {...panelProps} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-screen w-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-hidden">
@@ -77,7 +105,8 @@ const App: React.FC = () => {
           onNavigate={setActiveView}
         />
         {renderContent()}
-        <RightSidebar />
+        {renderRightPanel()}
+        <RightSidebar activePanel={activeRightSidebar} onToggle={handleRightSidebarToggle} />
       </div>
       {isComposeModalOpen && <ComposeModal onClose={() => setIsComposeModalOpen(false)} />}
     </div>
