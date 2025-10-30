@@ -10,7 +10,7 @@ interface PanelWrapperProps {
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ title, icon, onClose, children }) => {
   return (
-    <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0 animate-slide-in overflow-hidden">
+    <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-col flex-shrink-0 animate-slide-in overflow-hidden hidden md:flex">
       <style>{`
         @keyframes slide-in {
           from { transform: translateX(100%); opacity: 0; }

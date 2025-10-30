@@ -98,6 +98,13 @@ const App: React.FC = () => {
         onSearchChange={setSearchQuery}
       />
       <div className="flex flex-grow overflow-hidden">
+        {isLeftSidebarOpen && (
+          <div 
+            onClick={toggleLeftSidebar} 
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden" 
+            aria-hidden="true"
+          />
+        )}
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
           onComposeClick={() => setIsComposeModalOpen(true)}

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Email } from '../types';
 import { StarIcon as StarIconSolid, ArchiveIcon, TrashIcon, MailOpenIcon, ClockIcon as SnoozeIcon, RefreshIcon } from './icons/Icons';
@@ -7,7 +6,7 @@ import { StarIcon as StarIconOutline } from './icons/Icons';
 const EmailRow: React.FC<{ email: Email; onToggleStar: (id: string) => void; isSelected: boolean; onSelect: (id: string) => void; }> = ({ email, onToggleStar, isSelected, onSelect }) => {
     return (
         <div className={`flex items-center p-4 border-b border-gray-200 dark:border-gray-700 transition-all duration-200 ${email.isRead ? 'bg-white dark:bg-gray-800' : 'bg-blue-50 dark:bg-gray-900/50'} ${isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''} hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer`}>
-            <div className="flex items-center w-1/4 pr-4">
+            <div className="flex items-center w-2/5 sm:w-1/3 md:w-1/4 pr-4">
                 <input 
                     type="checkbox" 
                     className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
@@ -19,13 +18,13 @@ const EmailRow: React.FC<{ email: Email; onToggleStar: (id: string) => void; isS
                 <button onClick={(e) => { e.stopPropagation(); onToggleStar(email.id); }} className="ml-4 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
                     {email.isStarred ? <StarIconSolid className="h-5 w-5 text-yellow-500" /> : <StarIconOutline className="h-5 w-5 text-gray-400" />}
                 </button>
-                <img src={email.senderPhoto} alt={email.sender} className="h-8 w-8 rounded-full ml-4" />
+                <img src={email.senderPhoto} alt={email.sender} className="h-8 w-8 rounded-full ml-4 hidden sm:block" />
                 <span className={`ml-4 text-sm truncate ${email.isRead ? 'font-normal text-gray-600 dark:text-gray-400' : 'font-bold text-gray-900 dark:text-white'}`}>{email.sender}</span>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
                 <p className="text-sm truncate">
                     <span className={`font-medium ${email.isRead ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>{email.subject}</span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-2">- {email.snippet}</span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-2 hidden md:inline">- {email.snippet}</span>
                 </p>
             </div>
             <div className={`text-xs ml-4 whitespace-nowrap ${email.isRead ? 'text-gray-500' : 'text-gray-800 dark:text-gray-200 font-medium'}`}>

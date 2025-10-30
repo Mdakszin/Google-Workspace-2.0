@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MenuIcon, SearchIcon, QuestionMarkCircleIcon, CogIcon, AppsIcon } from './icons/Icons';
 
@@ -17,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, searchQuery, onSearchChang
         </button>
         <div className="flex items-center space-x-2">
           <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google" className="h-6 hidden sm:block" />
-          <span className="text-2xl text-gray-600 dark:text-gray-300 font-light">Workspace</span>
+          <span className="text-2xl text-gray-600 dark:text-gray-300 font-light hidden sm:inline-block">Workspace</span>
         </div>
       </div>
 

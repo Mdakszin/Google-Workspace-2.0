@@ -139,8 +139,12 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
   );
 
   return (
-    <div className="fixed bottom-0 right-4 w-full max-w-lg z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-t-lg shadow-2xl flex flex-col h-[500px] border border-gray-200 dark:border-gray-700">
+    <div className="fixed inset-0 z-50 flex items-end justify-center md:justify-end">
+      {/* Overlay for mobile */}
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 md:hidden" onClick={onClose} aria-hidden="true"></div>
+
+      {/* Modal content */}
+      <div className="relative bg-white dark:bg-gray-800 md:rounded-t-lg shadow-2xl flex flex-col w-full h-full md:h-[500px] md:max-w-lg md:mr-4 border-t md:border border-gray-200 dark:border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-t-lg">
           <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">New Message</h2>

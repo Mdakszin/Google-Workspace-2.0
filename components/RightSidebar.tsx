@@ -25,7 +25,7 @@ const SidebarButton: React.FC<{
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ activePanel, onToggle }) => {
   return (
-    <aside className="w-14 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0 z-10">
+    <aside className="w-14 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0 z-10 hidden md:flex flex-col">
       <div className="h-full flex flex-col items-center py-4 space-y-6">
         <SidebarButton
           icon={<CalendarIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />}
