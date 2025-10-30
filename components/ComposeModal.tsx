@@ -1,4 +1,4 @@
-import React, { useState, useRef, KeyboardEvent } from 'react';
+import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import { 
   XIcon, 
   PaperclipIcon, 
@@ -7,7 +7,9 @@ import {
   ItalicIcon, 
   UnderlineIcon, 
   ListOlIcon,
-  ListUlIcon
+  ListUlIcon,
+  ChevronDownIcon,
+  TrashIcon,
 } from './icons/Icons';
 
 interface ComposeModalProps {
@@ -23,17 +25,81 @@ const RecipientPill: React.FC<{ email: string; onRemove: () => void }> = ({ emai
   </span>
 );
 
+const FONT_FAMILIES = [
+  'Arial', 'Verdana', 'Helvetica', 'Tahoma', 'Trebuchet MS', 
+  'Times New Roman', 'Georgia', 'Garamond', 
+  'Courier New', 'Brush Script MT'
+];
+
+const FONT_SIZES = [
+  { name: 'Small', value: '2' }, // 13px
+  { name: 'Normal', value: '3' }, // 16px
+  { name: 'Large', value: '5' }, // 24px
+  { name: 'Huge', value: '7' } // 48px
+];
+
+const DRAFT_KEY = 'compose-draft';
+
 const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
   const [recipients, setRecipients] = useState<string[]>([]);
   const [currentRecipient, setCurrentRecipient] = useState('');
   const [subject, setSubject] = useState('');
   const bodyRef = useRef<HTMLDivElement>(null);
 
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        if (draft) {
+          setRecipients(draft.recipients || []);
+          setSubject(draft.subject || '');
+          if (bodyRef.current && draft.body) {
+            bodyRef.current.innerHTML = draft.body;
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse draft from localStorage", error);
+        localStorage.removeItem(DRAFT_KEY);
+      }
+    }
+  }, []); // Runs only once on mount
+
+  // Auto-save draft every 30 seconds
+  useEffect(() => {
+    const saveDraft = () => {
+      const draft = {
+        recipients,
+        subject,
+        body: bodyRef.current?.innerHTML || '',
+      };
+      if (draft.recipients.length > 0 || draft.subject || draft.body) {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      } else {
+        localStorage.removeItem(DRAFT_KEY); // Clean up if draft is empty
+      }
+    };
+
+    const intervalId = setInterval(saveDraft, 30000); // Auto-save every 30 seconds
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [recipients, subject]);
+
+
   const handleSend = () => {
     const body = bodyRef.current?.innerHTML || '';
     // In a real app, this would dispatch an action to send the email.
     console.log('Sending email:', { to: recipients, subject, body });
     alert('Email sent! (Check the console for details)');
+    localStorage.removeItem(DRAFT_KEY); // Clear draft on send
+    onClose();
+  };
+
+  const handleDiscard = () => {
+    localStorage.removeItem(DRAFT_KEY);
     onClose();
   };
   
@@ -55,9 +121,9 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
     setRecipients(recipients.filter((_, i) => i !== index));
   };
 
-  const applyFormat = (command: string) => {
+  const applyFormat = (command: string, value?: string) => {
     bodyRef.current?.focus();
-    document.execCommand(command, false);
+    document.execCommand(command, false, value);
   };
   
   const FormatButton: React.FC<{ onClick: () => void, children: React.ReactNode, label: string }> = ({ onClick, children, label }) => (
@@ -114,6 +180,7 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
             aria-label="Email body"
             role="textbox"
             aria-multiline="true"
+            style={{ fontFamily: 'Arial' }}
           />
         </div>
         
@@ -127,6 +194,38 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
               Send
             </button>
             <div className="flex items-center text-gray-500 dark:text-gray-400">
+              <div className="relative">
+                <select
+                  onChange={(e) => applyFormat('fontName', e.target.value)}
+                  defaultValue="Arial"
+                  className="bg-transparent text-sm focus:outline-none rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors p-2 pr-7 appearance-none"
+                  aria-label="Font family"
+                  title="Font family"
+                >
+                  {FONT_FAMILIES.map(font => <option key={font} value={font} style={{ fontFamily: font }}>{font}</option>)}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                  <ChevronDownIcon className="h-4 w-4" />
+                </div>
+              </div>
+
+              <div className="relative">
+                <select
+                  onChange={(e) => applyFormat('fontSize', e.target.value)}
+                  defaultValue="3"
+                  className="bg-transparent text-sm focus:outline-none rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors p-2 pr-7 appearance-none"
+                  aria-label="Font size"
+                  title="Font size"
+                >
+                  {FONT_SIZES.map(size => <option key={size.name} value={size.value}>{size.name}</option>)}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                  <ChevronDownIcon className="h-4 w-4" />
+                </div>
+              </div>
+
+              <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
               <FormatButton onClick={() => applyFormat('bold')} label="Bold">
                 <BoldIcon className="h-5 w-5" />
               </FormatButton>
@@ -151,6 +250,9 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ onClose }) => {
             </button>
             <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" aria-label="Insert link">
               <LinkIcon className="h-5 w-5" />
+            </button>
+            <button onClick={handleDiscard} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" aria-label="Discard draft" title="Discard draft">
+              <TrashIcon className="h-5 w-5" />
             </button>
           </div>
         </div>

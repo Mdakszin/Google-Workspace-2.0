@@ -5,6 +5,10 @@ import MainContent from './components/MainContent';
 import RightSidebar from './components/RightSidebar';
 import { Email } from './types';
 import ComposeModal from './components/ComposeModal';
+import ChatView from './components/ChatView';
+import SpacesView from './components/SpacesView';
+import MeetView from './components/MeetView';
+import RecentsView from './components/RecentsView';
 
 const mockEmails: Email[] = [
   { id: '1', sender: 'Google', senderPhoto: 'https://picsum.photos/seed/google/40/40', subject: 'Security alert', snippet: 'A new sign-in to your account was detected.', timestamp: '10:42 AM', isRead: false, isStarred: true },
@@ -23,6 +27,7 @@ const App: React.FC = () => {
   const [emails, setEmails] = useState<Email[]>(mockEmails);
   const [searchQuery, setSearchQuery] = useState('');
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
+  const [activeView, setActiveView] = useState('inbox');
 
   const toggleLeftSidebar = () => {
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
@@ -38,6 +43,25 @@ const App: React.FC = () => {
     email.snippet.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const renderContent = () => {
+    switch(activeView) {
+      case 'inbox':
+        return <MainContent emails={filteredEmails} onToggleStar={handleToggleStar} />;
+      case 'starred':
+        return <MainContent emails={filteredEmails.filter(e => e.isStarred)} onToggleStar={handleToggleStar} />;
+      case 'chat':
+        return <ChatView />;
+      case 'spaces':
+        return <SpacesView />;
+      case 'meet':
+        return <MeetView />;
+      case 'recents':
+        return <RecentsView />;
+      default:
+        return <MainContent emails={filteredEmails} onToggleStar={handleToggleStar} />;
+    }
+  }
+
   return (
     <div className="h-screen w-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-hidden">
       <Header
@@ -46,8 +70,13 @@ const App: React.FC = () => {
         onSearchChange={setSearchQuery}
       />
       <div className="flex flex-grow overflow-hidden">
-        <LeftSidebar isOpen={isLeftSidebarOpen} onComposeClick={() => setIsComposeModalOpen(true)} />
-        <MainContent emails={filteredEmails} onToggleStar={handleToggleStar} />
+        <LeftSidebar 
+          isOpen={isLeftSidebarOpen} 
+          onComposeClick={() => setIsComposeModalOpen(true)}
+          activeView={activeView}
+          onNavigate={setActiveView}
+        />
+        {renderContent()}
         <RightSidebar />
       </div>
       {isComposeModalOpen && <ComposeModal onClose={() => setIsComposeModalOpen(false)} />}
