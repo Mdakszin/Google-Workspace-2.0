@@ -1,0 +1,5 @@
+{
+  "name": "Google Workspace Clone",
+  "description": "A modern, responsive web application that mimics the user interface and core layout of Google Workspace, including familiar components like a navigation sidebar, main content area, and header with search functionality.",
+  "requestFramePermissions": []
+}
