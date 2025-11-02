@@ -41,7 +41,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onComposeClick, activ
   const isCompact = !isOpen;
   
   return (
-    <aside className={`fixed md:relative inset-y-0 left-0 z-30 bg-white dark:bg-gray-800 transition-transform duration-300 ease-in-out 
+    <aside className={`fixed md:relative inset-y-0 left-0 z-30 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out 
                      ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 
                      ${isCompact ? 'md:w-20' : 'md:w-64 w-64'}`}>
       <div className="h-full flex flex-col py-4">

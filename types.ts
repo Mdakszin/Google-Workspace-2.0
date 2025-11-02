@@ -1,6 +1,7 @@
 
 export interface Email {
   id: string;
+  threadId: string;
   sender: string;
   senderPhoto: string;
   subject: string;
